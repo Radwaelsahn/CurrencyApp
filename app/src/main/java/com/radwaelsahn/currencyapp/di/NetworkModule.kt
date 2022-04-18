@@ -3,6 +3,7 @@ package com.radwaelsahn.currencyapp.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.radwaelsahn.currencyapp.BuildConfig
 import com.radwaelsahn.currencyapp.data.source.remote.repositories.characters.CharactersService
 import com.radwaelsahn.currencyapp.utils.Constants
 import dagger.Module
@@ -50,13 +51,13 @@ object NetworkModule {
         }.build()
     }
 
-//    @Singleton
-//    @Provides
-//    fun provideRetrofitBuilder(gson: Gson, okHttpClient: OkHttpClient): Retrofit.Builder {
-//        return Retrofit.Builder().client(okHttpClient)
-//            .baseUrl(BuildConfig.BASE_URL + BuildConfig.API_VERSION)
-//            .addConverterFactory(GsonConverterFactory.create(gson))
-//    }
+    @Singleton
+    @Provides
+    fun provideRetrofitBuilder(gson: Gson, okHttpClient: OkHttpClient): Retrofit.Builder {
+        return Retrofit.Builder().client(okHttpClient)
+            .baseUrl(BuildConfig.BASE_URL + BuildConfig.API_VERSION)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+    }
 
 
     @Singleton

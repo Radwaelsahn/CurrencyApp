@@ -5,7 +5,7 @@ data class Currency(
     val decimal_digits: Int,
     val name: String,
     val name_plural: String,
-    val rounding: Int,
+    val rounding: Double,
     val symbol: String,
     val symbol_native: String
 )

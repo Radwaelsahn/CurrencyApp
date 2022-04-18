@@ -7,6 +7,7 @@ import com.radwaelsahn.currencyapp.data.source.remote.repositories.characters.Ch
 import kotlinx.coroutines.CoroutineScope
 import java.io.BufferedReader
 import java.io.InputStream
+import java.lang.Exception
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -17,12 +18,21 @@ constructor(
     override val coroutineContext: CoroutineContext
 ) : CoroutineScope {
 
-    fun getCurrencyList(input: InputStream): List<Currency> {
+    fun getCurrencyList(input: InputStream): List<Currency>? {
 
-        val allText = input.bufferedReader().use(BufferedReader::readText)
-
-        val countriesType = object : TypeToken<List<Currency>>() {}.type
-        return Gson().fromJson<List<Currency>>(allText, countriesType).toMutableList()
+        try {
+            val allText = input.bufferedReader().use(BufferedReader::readText)
+            println("CURRENCY: " + allText)
+            val countriesType = object : TypeToken<List<Currency>>() {}.type
+            val list =  Gson().fromJson<List<Currency>>(allText, countriesType).toMutableList()
+            println("RADWA: HERE1")
+            return list
+        } catch (e: Exception) {
+            println("RADWA: HERE2")
+            println("RADWA: " + e.message)
+            return null
+        }
+        println("RADWA: HERE3")
     }
 
 }

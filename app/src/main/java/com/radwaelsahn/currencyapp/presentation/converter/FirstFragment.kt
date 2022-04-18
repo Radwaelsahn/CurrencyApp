@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -15,6 +16,7 @@ import com.google.gson.reflect.TypeToken
 import com.radwaelsahn.currencyapp.R
 import com.radwaelsahn.currencyapp.data.models.Currency
 import com.radwaelsahn.currencyapp.databinding.FragmentFirstBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_first.*
 import java.io.BufferedReader
 import java.io.InputStream
@@ -22,7 +24,10 @@ import java.io.InputStream
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
+@AndroidEntryPoint
 class FirstFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
+    val converterViewModel: ConverterViewModel by viewModels()
 
     private var _binding: FragmentFirstBinding? = null
 
@@ -30,7 +35,6 @@ class FirstFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    val converterViewModel: ConverterViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,20 +61,21 @@ class FirstFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     fun readCurrencies() {
-//        val input: InputStream = resources.openRawResource(R.raw.currencies)
-//        val currencyList = converterViewModel.getCurrencyList(input)
-//
-//        var names = currencyList.map { it.name }
-//        val adapter = ArrayAdapter(
-//            requireContext(),
-//            R.layout.item_spinner, names
-//        )
-//
-//        spinner_from_currency.adapter = adapter
-//        spinner_from_currency.onItemSelectedListener = this
-//
-//        spinner_to_currency.adapter = adapter
-//        spinner_to_currency.onItemSelectedListener = this
+        val input: InputStream = resources.openRawResource(R.raw.currencies)
+        val currencyList = converterViewModel.getCurrencyList(input)
+        currencyList?.let {
+            var names = currencyList.map { it.code }
+            val adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.item_spinner, names
+            )
+
+            spinner_from_currency.adapter = adapter
+            spinner_from_currency.onItemSelectedListener = this
+
+            spinner_to_currency.adapter = adapter
+            spinner_to_currency.onItemSelectedListener = this
+        }
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
