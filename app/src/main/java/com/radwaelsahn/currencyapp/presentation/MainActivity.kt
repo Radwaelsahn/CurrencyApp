@@ -1,4 +1,4 @@
-package com.radwaelsahn.currencyapp
+package com.radwaelsahn.currencyapp.presentation
 
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -9,6 +9,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import com.radwaelsahn.currencyapp.R
 import com.radwaelsahn.currencyapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

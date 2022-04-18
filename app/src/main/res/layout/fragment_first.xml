@@ -4,17 +4,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FirstFragment">
+    android:background="@color/purple_200"
+    tools:context=".presentation.converter.FirstFragment">
 
-    <TextView
-        android:id="@+id/textview_first"
+    <Button
+        android:id="@+id/button_swap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_first_fragment"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:text="swap"
+        app:layout_constraintBottom_toBottomOf="@id/tv_from_currency"
+        app:layout_constraintEnd_toStartOf="@id/tv_to_currency"
+        app:layout_constraintStart_toEndOf="@id/tv_from_currency"
+        app:layout_constraintTop_toTopOf="@id/tv_from_currency" />
+
+    <TextView
+        android:id="@+id/tv_from_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/from"
         app:layout_constraintBottom_toTopOf="@id/button_first"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_to_currency"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Spinner
+        android:id="@+id/spinner_from_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        app:layout_constraintStart_toStartOf="@id/tv_from_currency"
+        app:layout_constraintTop_toBottomOf="@id/button_swap" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_from"
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/tv_from_currency"
+        app:layout_constraintTop_toBottomOf="@id/spinner_from_currency" />
+
+    <TextView
+        android:id="@+id/tv_to_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to"
+        app:layout_constraintBottom_toTopOf="@id/button_first"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_from_currency"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Spinner
+        android:id="@+id/spinner_to_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        app:layout_constraintStart_toStartOf="@id/tv_to_currency"
+        app:layout_constraintTop_toTopOf="@id/spinner_from_currency" />
+
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_to"
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        app:layout_constraintStart_toStartOf="@id/tv_to_currency"
+        app:layout_constraintTop_toBottomOf="@id/spinner_from_currency" />
 
     <Button
         android:id="@+id/button_first"
@@ -24,5 +81,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_first" />
+        app:layout_constraintTop_toBottomOf="@id/spinner_to_currency" />
 </androidx.constraintlayout.widget.ConstraintLayout>

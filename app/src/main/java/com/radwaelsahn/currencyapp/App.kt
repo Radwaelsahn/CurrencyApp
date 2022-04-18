@@ -3,9 +3,9 @@ package com.radwaelsahn.currencyapp
 
 import android.app.Application
 import android.content.Context
-//import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.HiltAndroidApp
 
-//@HiltAndroidApp
+@HiltAndroidApp
 open class App : Application() {
 
     val TAG = this.javaClass.simpleName
