@@ -3,7 +3,7 @@ package com.radwaelsahn.currencyapp.di
 
 import android.app.Application
 import android.content.Context
-import com.radwaelsahn.currencyapp.data.source.local.db.MarvelDatabase
+import com.radwaelsahn.currencyapp.data.datasources.local.db.MarvelDatabase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

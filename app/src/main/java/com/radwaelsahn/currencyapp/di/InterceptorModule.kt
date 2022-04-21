@@ -1,7 +1,7 @@
 package com.radwaelsahn.currencyapp.di
 
-import com.radwaelsahn.currencyapp.data.source.remote.networking.AuthInterceptor
-import com.radwaelsahn.currencyapp.data.source.remote.networking.TokenAuthenticator
+import com.radwaelsahn.currencyapp.data.datasources.remote.networking.AuthInterceptor
+import com.radwaelsahn.currencyapp.data.datasources.remote.networking.TokenAuthenticator
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
