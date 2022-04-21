@@ -13,7 +13,6 @@ import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import com.radwaelsahn.currencyapp.R
 import com.radwaelsahn.currencyapp.databinding.ActivityMainBinding
-import com.radwaelsahn.currencyapp.presentation.converter.ConverterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

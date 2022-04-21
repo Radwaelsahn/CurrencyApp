@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.radwaelsahn.currencyapp.presentation.converter.FirstFragment"
+        android:name="com.radwaelsahn.currencyapp.presentation.converter.CurrenciesFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_currencies">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"

@@ -1,47 +1,44 @@
 package com.radwaelsahn.currencyapp.presentation.converter
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.activity.viewModels
-import androidx.fragment.app.activityViewModels
+
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+
 import com.radwaelsahn.currencyapp.R
-import com.radwaelsahn.currencyapp.data.models.Currency
-import com.radwaelsahn.currencyapp.databinding.FragmentFirstBinding
+import com.radwaelsahn.currencyapp.data.Resource
+import com.radwaelsahn.currencyapp.databinding.FragmentCurrenciesBinding
+
+import com.radwaelsahn.currencyapp.presentation.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_first.*
-import java.io.BufferedReader
+import kotlinx.android.synthetic.main.fragment_currencies.*
+import kotlinx.coroutines.flow.collect
+
 import java.io.InputStream
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 @AndroidEntryPoint
-class FirstFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
-    val converterViewModel: ConverterViewModel by viewModels()
+    private val converterViewModel: ConverterViewModel by viewModels()
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentCurrenciesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentCurrenciesBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -52,12 +49,45 @@ class FirstFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
-        readCurrencies()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun initViews() {
+
+    }
+
+    override fun observeFlowData() {
+        lifecycleScope.launchWhenStarted {
+            converterViewModel.uiFlow.collect { state ->
+                when (state)
+                {
+                    is Resource.Loading -> {
+                        showLoading(progress_bar, state.loading)
+                    }
+                    is Resource.Success -> {
+                        showLoading(progress_bar, false)
+                        //state.data?.let { showCharacters(it) } ?: showError(state.error)
+                    }
+                    is Resource.Error -> {
+                        showLoading(progress_bar, false)
+                        state.error?.let {
+                            showError(state.error)
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+
+    override fun getData() {
+        converterViewModel.getData()
+        readCurrencies()
     }
 
     fun readCurrencies() {

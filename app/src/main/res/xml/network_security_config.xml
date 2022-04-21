@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <debug-overrides>
+            <trust-anchors>
+                <certificates src="system" />
+            </trust-anchors>
+        </debug-overrides>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">https://gateway.marvel.com/</domain>
+        <domain includeSubdomains="true">gateway.marvel.com/</domain>
+        <trust-anchors>
+<!--            <certificates src="@raw/mycert" />-->
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+
+</network-security-config>

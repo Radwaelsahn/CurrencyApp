@@ -18,8 +18,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField 'String', 'BASE_URL', "\"https://gateway.marvel.com/\""
-        buildConfigField 'String', 'API_VERSION', "\"v1/\""
+        buildConfigField 'String', 'BASE_URL', "\"http://data.fixer.io/api/\""
+        buildConfigField 'String', "API_KEY", "\"5446d9ab83f7d41d97d4ec800a45b362\""
 
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
@@ -45,6 +45,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
 
 dependencies {
