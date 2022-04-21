@@ -3,6 +3,7 @@ package com.radwaelsahn.currencyapp.data.datasources.remote
 import android.util.Log
 import com.google.gson.Gson
 import com.radwaelsahn.currencyapp.App
+import com.radwaelsahn.currencyapp.data.models.Error
 import com.radwaelsahn.currencyapp.data.models.responses.ErrorResponse
 import com.radwaelsahn.currencyapp.utils.Network
 import retrofit2.Response
@@ -18,7 +19,7 @@ open class BaseRemoteRepository {
     var refreshCount = 0
     suspend fun processCall(responseCall: suspend () -> Response<*>): Any? {
         if (!Network.isConnected(App.context)) {
-            val errorResponse = ErrorResponse("NO_INTERNET_CONNECTION")
+            val errorResponse = ErrorResponse(Error(0,"NO_INTERNET_CONNECTION",""),false)
             return errorResponse
         }
         return try {
@@ -55,15 +56,15 @@ open class BaseRemoteRepository {
                     errorResponse
                 } catch (e: Exception) {
                     e.printStackTrace()
-
-                    val errorResponse = ErrorResponse("please try again later")
+                    Log.e("EXEP",e.message.toString())
+                    val errorResponse = ErrorResponse(Error(0,"Please Try Again Later",""),false)
                     errorResponse
                 }
             }
         } catch (e: IOException) {
             e.printStackTrace()
             Log.e(TAG, "::IO Exception + ${e.message.toString()}", e)
-            val errorResponse = ErrorResponse("please try again later")
+            val errorResponse = ErrorResponse(Error(0,"Please Try Again Later",""),false)
             errorResponse
         }
     }

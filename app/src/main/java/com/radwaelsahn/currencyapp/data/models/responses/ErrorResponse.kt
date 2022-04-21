@@ -1,8 +1,8 @@
 package com.radwaelsahn.currencyapp.data.models.responses
 
+import com.radwaelsahn.currencyapp.data.models.Error
+
 data class ErrorResponse(
-    val message: String?
-//    var errors: LinkedHashMap<String, List<String>>?
+    val error: Error,
+    val success: Boolean
 )
-
-
