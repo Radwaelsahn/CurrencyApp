@@ -5,6 +5,7 @@ import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
 
 import com.radwaelsahn.currencyapp.data.models.responses.ErrorResponse
 import com.radwaelsahn.currencyapp.data.datasources.remote.BaseRemoteRepository
+import com.radwaelsahn.currencyapp.data.models.ConvertResponse
 import javax.inject.Inject
 
 /**
@@ -26,4 +27,18 @@ class CurrenciesRemoteRepository @Inject constructor(
         }
     }
 
+    override suspend fun convertCurrency(
+        accessKey: String, from: String,
+        to: String,
+        amount: String
+    ): Resource<ConvertResponse> {
+        val response = processCall { service.convertCurrency(accessKey, from, to, amount) }
+
+        return try {
+            var myResponse = response as ConvertResponse
+            Resource.Success(data = myResponse)
+        } catch (e: Exception) {
+            Resource.DataError(errorResponse = response as ErrorResponse)
+        }
+    }
 }

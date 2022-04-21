@@ -2,6 +2,7 @@ package com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currenc
 
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.models.Character
+import com.radwaelsahn.currencyapp.data.models.ConvertResponse
 import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
 
 /**
@@ -15,4 +16,9 @@ interface CurrenciesDataSource {
 
     /**remote*/
     suspend fun getCurrencies(key: String): Resource<CurrenciesResponse>
+    suspend fun convertCurrency(
+        accessKey: String, from: String,
+        to: String,
+        amount: String
+    ): Resource<ConvertResponse>
 }

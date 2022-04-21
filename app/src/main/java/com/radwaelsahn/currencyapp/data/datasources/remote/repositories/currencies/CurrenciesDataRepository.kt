@@ -4,6 +4,7 @@ import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.models.Character
 import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
 import com.radwaelsahn.currencyapp.data.datasources.local.LocalSource
+import com.radwaelsahn.currencyapp.data.models.ConvertResponse
 import javax.inject.Inject
 
 
@@ -30,6 +31,15 @@ class CurrenciesDataRepository @Inject constructor(
     /**    remote **/
     override suspend fun getCurrencies(key: String): Resource<CurrenciesResponse> {
         return remoteRepository.getCurrencies(key)
+    }
+
+    override suspend fun convertCurrency(
+        accessKey: String,
+        from: String,
+        to: String,
+        amount: String
+    ): Resource<ConvertResponse> {
+        return remoteRepository.convertCurrency(accessKey, from, to, amount)
     }
 
 
