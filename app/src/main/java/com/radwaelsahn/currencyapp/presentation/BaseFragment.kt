@@ -12,13 +12,13 @@ abstract class BaseFragment: Fragment()
 {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
-        observeFlowData()
-        getData()
+//        initViews()
+//        observeFlowData()
+//        getData()
     }
-    abstract fun initViews()
-    abstract fun observeFlowData()
-    abstract fun getData()
+//    abstract fun initViews()
+//    abstract fun observeFlowData()
+//    abstract fun getData()
 
     fun showLoading(progressBar: ProgressBar?, show: Boolean) {
         progressBar?.let {

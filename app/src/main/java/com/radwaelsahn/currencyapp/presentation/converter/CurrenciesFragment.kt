@@ -46,9 +46,10 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
+        initViews()
+        getData()
+//        observeFlowData()
+
     }
 
     override fun onDestroyView() {
@@ -56,15 +57,17 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         _binding = null
     }
 
-    override fun initViews() {
-
+    fun initViews() {
+        binding.buttonConvert.setOnClickListener {
+            convertCurrencies()
+//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        }
     }
 
-    override fun observeFlowData() {
+    fun observeFlowData() {
         lifecycleScope.launchWhenStarted {
             converterViewModel.uiFlow.collect { state ->
-                when (state)
-                {
+                when (state) {
                     is Resource.Loading -> {
                         showLoading(progress_bar, state.loading)
                     }
@@ -85,8 +88,8 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
 
-    override fun getData() {
-        converterViewModel.getData()
+    fun getData() {
+//        converterViewModel.getData()
         readCurrencies()
     }
 
@@ -114,5 +117,36 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
 
+    }
+
+
+    private fun convertCurrencies() {
+        converterViewModel.convertCurrency(
+            spinner_from_currency.selectedItem.toString(),
+            spinner_to_currency.selectedItem.toString(),
+            et_from.text.toString()
+        )
+
+        lifecycleScope.launchWhenStarted {
+            converterViewModel.uiFlow.collect { state ->
+                when (state) {
+                    is Resource.Loading -> {
+                        showLoading(progress_bar, state.loading)
+                    }
+                    is Resource.Success -> {
+                        showLoading(progress_bar, false)
+                        tv_to_currency.text = state.data?.result.toString()
+                        //state.data?.let { showCharacters(it) } ?: showError(state.error)
+                    }
+                    is Resource.Error -> {
+                        showLoading(progress_bar, false)
+                        state.error?.let {
+                            showError(state.error)
+                        }
+                    }
+
+                }
+            }
+        }
     }
 }
