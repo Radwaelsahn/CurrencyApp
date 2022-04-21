@@ -9,7 +9,6 @@ import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
 import com.radwaelsahn.currencyapp.data.models.Currency
 import com.radwaelsahn.currencyapp.data.models.Rates
 import com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies.CurrenciesDataSource
-import com.radwaelsahn.currencyapp.data.models.ConvertResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,32 +19,49 @@ import java.lang.Exception
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class ConverterUseCase @Inject constructor(
+class GetLatestCurrenciesUseCase @Inject constructor(
     private val dataRepository: CurrenciesDataSource,
     override val coroutineContext: CoroutineContext
 ) : CoroutineScope {
 
-    val isLoading = MutableLiveData<Boolean>()
-    private val _uiFlow = MutableStateFlow<Resource<ConvertResponse>>(Resource.Loading(true))
-    val uiFlow: StateFlow<Resource<ConvertResponse>> = _uiFlow
+    fun getStaticCurrencyList(input: InputStream): List<Currency>? {
 
-    private val _response = MutableLiveData<Resource<ConvertResponse>>()
+        try {
+            val allText = input.bufferedReader().use(BufferedReader::readText)
+            println("CURRENCY: " + allText)
+            val countriesType = object : TypeToken<List<Currency>>() {}.type
+            val list = Gson().fromJson<List<Currency>>(allText, countriesType).toMutableList()
+            println("RADWA: HERE1")
+            return list
+        } catch (e: Exception) {
+            println("RADWA: HERE2")
+            println("RADWA: " + e.message)
+            return null
+        }
+        println("RADWA: HERE3")
+    }
+
+    val isLoading = MutableLiveData<Boolean>()
+    private val _uiFlow = MutableStateFlow<Resource<Rates>>(Resource.Loading(true))
+    val uiFlow: StateFlow<Resource<Rates>> = _uiFlow
+
+    private val _response = MutableLiveData<Resource<CurrenciesResponse>>()
     val response = _response
 
-    fun convertCurrency(from: String, to: String, amount: String) {
+    fun fetchCurrencies() {
 
         launch {
             try {
                 _uiFlow.value = Resource.Loading(true)
                 isLoading.value = true
-                var resources = dataRepository.convertCurrency(
-                    BuildConfig.API_KEY, from, to, amount
+                var resources = dataRepository.getCurrencies(
+                    BuildConfig.API_KEY
                 )
                 _uiFlow.value = Resource.Loading(false)
                 isLoading.value = false
 
                 _response.postValue(resources)
-                _uiFlow.value = Resource.Success(resources.data)
+                _uiFlow.value = Resource.Success(resources.data?.rates)
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -55,5 +71,6 @@ class ConverterUseCase @Inject constructor(
             }
         }
     }
+
 
 }
