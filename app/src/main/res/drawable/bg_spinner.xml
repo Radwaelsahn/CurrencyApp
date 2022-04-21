@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <item>
+                <shape android:shape="rectangle">
+                    <corners android:radius="@dimen/corner_small" />
+                    <padding android:bottom="@dimen/_16sdp" android:left="@dimen/_8sdp" android:right="@dimen/_8sdp" android:top="@dimen/_16sdp" />
+                    <stroke android:width="1dp" android:color="#D4D4D4" />
+                    <solid android:color="@android:color/transparent" />
+
+
+                </shape>
+            </item>
+            <item android:gravity="end|center_vertical">
+                <vector android:width="12dp" android:height="6dp" android:autoMirrored="true" android:viewportWidth="12" android:viewportHeight="6">
+                    <padding android:bottom="@dimen/_8sdp" android:left="@dimen/_8sdp" android:right="@dimen/_8sdp" android:top="@dimen/_8sdp" />
+                    <path android:fillColor="@color/material_on_surface_stroke" android:fillType="evenOdd" android:pathData="M6.4243,5.5757L10.9757,1.0243C11.3537,0.6463 11.086,0 10.5515,0H1.4485C0.914,0 0.6463,0.6463 1.0243,1.0243L5.5757,5.5757C5.8101,5.8101 6.1899,5.8101 6.4243,5.5757Z" />
+                </vector>
+            </item>
+        </layer-list>
+    </item>
+</selector>
