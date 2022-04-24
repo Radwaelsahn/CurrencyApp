@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.radwaelsahn.currencyapp.BuildConfig
 import com.radwaelsahn.currencyapp.data.Resource
-import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
+import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 import com.radwaelsahn.currencyapp.data.models.Currency
 import com.radwaelsahn.currencyapp.data.models.Rates
 import com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies.CurrenciesDataSource
@@ -60,8 +60,13 @@ class GetLatestCurrenciesUseCase @Inject constructor(
                 _uiFlow.value = Resource.Loading(false)
                 isLoading.value = false
 
-                _response.postValue(resources)
-                _uiFlow.value = Resource.Success(resources.data?.rates)
+                if (resources.errorResponse != null) {
+                    _uiFlow.value = Resource.Error(resources.errorResponse?.error?.info)
+                } else if (resources!!.data != null) {
+
+                    _response.postValue(resources)
+                    _uiFlow.value = Resource.Success(resources.data?.rates)
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()

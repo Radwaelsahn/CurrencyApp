@@ -1,10 +1,8 @@
 package com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies
 
-import com.radwaelsahn.currencyapp.data.models.Character
-import com.radwaelsahn.currencyapp.data.models.responses.BaseResponse
 import com.radwaelsahn.currencyapp.data.datasources.remote.networking.Urls
-import com.radwaelsahn.currencyapp.data.models.ConvertResponse
-import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
+import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
+import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -18,6 +16,13 @@ interface CurrenciesService {
     @GET(Urls.Currencies)
     suspend fun getCurrencies(
         @Query("access_key") accessKey: String
+    ): Response<CurrenciesResponse>
+
+    @GET(Urls.Currencies)
+    suspend fun getCurrenciesWithBase(
+        @Query("access_key") accessKey: String,
+        @Query("base") base: String,
+        @Query("symbols") symbols: String,
     ): Response<CurrenciesResponse>
 
     @GET(Urls.Convert)

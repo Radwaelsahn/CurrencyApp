@@ -1,11 +1,12 @@
 package com.radwaelsahn.currencyapp.data.models.responses
 
+import com.radwaelsahn.currencyapp.data.models.Error
 
-data class BaseResponse<T>(
-    val code: Int,
-    val status: String,
-    val data: ResponseData<T>
-)
+
+open class BaseResponse {
+    val success: Boolean = false
+    val error: Error? = null
+}
 
 
 

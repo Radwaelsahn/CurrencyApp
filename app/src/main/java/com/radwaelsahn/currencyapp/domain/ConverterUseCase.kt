@@ -1,21 +1,14 @@
 package com.radwaelsahn.currencyapp.domain
 
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.radwaelsahn.currencyapp.BuildConfig
 import com.radwaelsahn.currencyapp.data.Resource
-import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
-import com.radwaelsahn.currencyapp.data.models.Currency
-import com.radwaelsahn.currencyapp.data.models.Rates
 import com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies.CurrenciesDataSource
-import com.radwaelsahn.currencyapp.data.models.ConvertResponse
+import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.io.InputStream
 import java.lang.Exception
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -43,10 +36,12 @@ class ConverterUseCase @Inject constructor(
                 )
                 _uiFlow.value = Resource.Loading(false)
                 isLoading.value = false
-
-                _response.postValue(resources)
-                _uiFlow.value = Resource.Success(resources.data)
-
+                if (resources.errorResponse != null) {
+                    _uiFlow.value = Resource.Error(resources.errorResponse?.error?.info)
+                } else if (resources!!.data != null) {
+                    _response.postValue(resources)
+                    _uiFlow.value = Resource.Success(resources.data)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 _uiFlow.value = Resource.Loading(false)

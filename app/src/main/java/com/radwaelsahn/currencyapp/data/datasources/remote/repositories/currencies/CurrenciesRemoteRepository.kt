@@ -1,11 +1,14 @@
 package com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies
 
+import android.util.Log
+import com.google.gson.Gson
 import com.radwaelsahn.currencyapp.data.Resource
-import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
+import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 
 import com.radwaelsahn.currencyapp.data.models.responses.ErrorResponse
 import com.radwaelsahn.currencyapp.data.datasources.remote.BaseRemoteRepository
-import com.radwaelsahn.currencyapp.data.models.ConvertResponse
+import com.radwaelsahn.currencyapp.data.models.Error
+import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
 import javax.inject.Inject
 
 /**
@@ -18,10 +21,15 @@ class CurrenciesRemoteRepository @Inject constructor(
 
     override suspend fun getCurrencies(key: String): Resource<CurrenciesResponse> {
         val response = processCall { service.getCurrencies(key) }
+//        val response = processCall { service.getCurrenciesWithBase(key, "USD", "EGP") }
+        // base API is restricted
 
         return try {
             var myResponse = response as CurrenciesResponse
-            Resource.Success(data = myResponse)
+            if (myResponse.success)
+                Resource.Success(data = myResponse)
+            else
+                Resource.DataError(errorResponse = myResponse.error as ErrorResponse)
         } catch (e: Exception) {
             Resource.DataError(errorResponse = response as ErrorResponse)
         }
@@ -33,12 +41,17 @@ class CurrenciesRemoteRepository @Inject constructor(
         amount: String
     ): Resource<ConvertResponse> {
         val response = processCall { service.convertCurrency(accessKey, from, to, amount) }
-
+        //  API is restricted
         return try {
             var myResponse = response as ConvertResponse
-            Resource.Success(data = myResponse)
+            Log.e("response",Gson().toJson(myResponse))
+            if (myResponse.success)
+                Resource.Success(data = myResponse)
+            else {
+                Resource.DataError(errorResponse = ErrorResponse(myResponse.error as Error,false))
+            }
         } catch (e: Exception) {
-            Resource.DataError(errorResponse = response as ErrorResponse)
+            Resource.DataError(errorResponse = (response as ErrorResponse))
         }
     }
 }

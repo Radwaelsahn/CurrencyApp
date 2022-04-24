@@ -2,9 +2,9 @@ package com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currenc
 
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.models.Character
-import com.radwaelsahn.currencyapp.data.models.CurrenciesResponse
+import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 import com.radwaelsahn.currencyapp.data.datasources.local.LocalSource
-import com.radwaelsahn.currencyapp.data.models.ConvertResponse
+import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
 import javax.inject.Inject
 
 
