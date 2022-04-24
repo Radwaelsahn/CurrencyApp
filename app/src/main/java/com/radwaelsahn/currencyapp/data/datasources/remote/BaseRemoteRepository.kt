@@ -27,7 +27,6 @@ open class BaseRemoteRepository {
             responseCall.toString()
             if (response.isSuccessful) {
                 refreshCount = 0
-                Log.e("response", Gson().toJson(response.body()))
                 response.body()
             } else {
                 val errorBody = response.errorBody()

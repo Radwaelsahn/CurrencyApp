@@ -1,10 +1,9 @@
 package com.radwaelsahn.currencyapp.domain
 
-import androidx.lifecycle.MutableLiveData
 import com.radwaelsahn.currencyapp.BuildConfig
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies.CurrenciesDataSource
-import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
+import com.radwaelsahn.currencyapp.data.models.Currencies
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,37 +17,48 @@ class ConverterUseCase @Inject constructor(
     override val coroutineContext: CoroutineContext
 ) : CoroutineScope {
 
-    val isLoading = MutableLiveData<Boolean>()
-    private val _uiFlow = MutableStateFlow<Resource<ConvertResponse>>(Resource.Loading(true))
-    val uiFlow: StateFlow<Resource<ConvertResponse>> = _uiFlow
-
-    private val _response = MutableLiveData<Resource<ConvertResponse>>()
-    val response = _response
+    private val _uiFlow = MutableStateFlow<Resource<String>>(Resource.Loading(true))
+    val uiFlow: StateFlow<Resource<String>> = _uiFlow
 
     fun convertCurrency(from: String, to: String, amount: String) {
 
         launch {
             try {
                 _uiFlow.value = Resource.Loading(true)
-                isLoading.value = true
                 var resources = dataRepository.convertCurrency(
                     BuildConfig.API_KEY, from, to, amount
                 )
                 _uiFlow.value = Resource.Loading(false)
-                isLoading.value = false
                 if (resources.errorResponse != null) {
                     _uiFlow.value = Resource.Error(resources.errorResponse?.error?.info)
+                    // we're using convert static bcoz it's restricted on the APIs
+                    _uiFlow.value = Resource.Success(convertCurrencyStatic(from, to, amount))
                 } else if (resources!!.data != null) {
-                    _response.postValue(resources)
-                    _uiFlow.value = Resource.Success(resources.data)
+                    _uiFlow.value = Resource.Success(resources.data?.result.toString())
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 _uiFlow.value = Resource.Loading(false)
-                isLoading.value = false
                 _uiFlow.value = Resource.Error(e.message)
             }
         }
     }
+
+    private fun convertCurrencyStatic(from: String, to: String, amount: String): String {
+        val intAmount = Integer.parseInt(amount)
+        var rate = 1.0
+        rate = when (to) { // will consider the base is
+            Currencies.USD.name -> Currencies.USD.rate
+            Currencies.AED.name -> Currencies.AED.rate
+            Currencies.CAD.name -> Currencies.CAD.rate
+            Currencies.EGP.name -> Currencies.EGP.rate
+            Currencies.EUR.name -> Currencies.EUR.rate
+            Currencies.KWD.name -> Currencies.KWD.rate
+            else -> Currencies.USD.rate
+        }
+
+        return (intAmount * rate).toString()
+    }
+
 
 }

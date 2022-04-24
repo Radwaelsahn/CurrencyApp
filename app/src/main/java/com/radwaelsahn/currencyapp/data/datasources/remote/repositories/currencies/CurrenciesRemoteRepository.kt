@@ -44,7 +44,6 @@ class CurrenciesRemoteRepository @Inject constructor(
         //  API is restricted
         return try {
             var myResponse = response as ConvertResponse
-            Log.e("response",Gson().toJson(myResponse))
             if (myResponse.success)
                 Resource.Success(data = myResponse)
             else {

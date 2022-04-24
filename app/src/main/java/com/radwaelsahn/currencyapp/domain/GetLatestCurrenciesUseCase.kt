@@ -24,29 +24,32 @@ class GetLatestCurrenciesUseCase @Inject constructor(
     override val coroutineContext: CoroutineContext
 ) : CoroutineScope {
 
-    fun getStaticCurrencyList(input: InputStream): List<Currency>? {
 
-        try {
-            val allText = input.bufferedReader().use(BufferedReader::readText)
-            println("CURRENCY: " + allText)
-            val countriesType = object : TypeToken<List<Currency>>() {}.type
-            val list = Gson().fromJson<List<Currency>>(allText, countriesType).toMutableList()
-            println("RADWA: HERE1")
-            return list
-        } catch (e: Exception) {
-            println("RADWA: HERE2")
-            println("RADWA: " + e.message)
-            return null
-        }
-        println("RADWA: HERE3")
-    }
-
+    val staticCurrenciesList = MutableLiveData<List<String>>()
     val isLoading = MutableLiveData<Boolean>()
     private val _uiFlow = MutableStateFlow<Resource<Rates>>(Resource.Loading(true))
     val uiFlow: StateFlow<Resource<Rates>> = _uiFlow
 
     private val _response = MutableLiveData<Resource<CurrenciesResponse>>()
     val response = _response
+
+    fun getStaticCurrencyList(input: InputStream) {
+
+        try {
+            val allText = input.bufferedReader().use(BufferedReader::readText)
+            val countriesType = object : TypeToken<List<Currency>>() {}.type
+            val list = Gson().fromJson<List<Currency>>(allText, countriesType).toMutableList()
+
+            list?.let {
+                var names = list.map { it.code }
+                staticCurrenciesList.postValue(names)
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+        }
+    }
 
     fun fetchCurrencies() {
 
@@ -76,6 +79,4 @@ class GetLatestCurrenciesUseCase @Inject constructor(
             }
         }
     }
-
-
 }

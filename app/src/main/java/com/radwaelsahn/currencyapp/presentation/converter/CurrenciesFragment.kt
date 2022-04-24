@@ -1,11 +1,14 @@
 package com.radwaelsahn.currencyapp.presentation.converter
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.os.bundleOf
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +19,8 @@ import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.databinding.FragmentCurrenciesBinding
 
 import com.radwaelsahn.currencyapp.presentation.BaseFragment
+import com.radwaelsahn.currencyapp.utils.Constants
+import com.radwaelsahn.currencyapp.utils.observe
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_currencies.*
 import kotlinx.coroutines.flow.collect
@@ -36,9 +41,11 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentCurrenciesBinding.inflate(inflater, container, false)
+        _binding?.currenciesViewModel = converterViewModel
+
         return binding.root
 
     }
@@ -48,8 +55,43 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
         initViews()
         getData()
-//        observeFlowData()
+        observeViewModel()
+    }
 
+    private fun observeViewModel() {
+        with(converterViewModel) {
+            observe(viewLifecycleOwner, convertedValue, ::showResult)
+            observe(
+                viewLifecycleOwner,
+                staticCurrenciesList,
+                ::showCurrenciesList
+            )
+            observe(viewLifecycleOwner, selectFrom, ::selectSpinnerFrom)
+            observe(viewLifecycleOwner, selectTo, ::selectSpinnerTo)
+//            observe(viewLifecycleOwner, fromValue, ::showFrom)
+        }
+    }
+
+//    private fun showFrom(value: String) {
+//        binding.etFrom.setText(value)
+//    }
+
+    private fun selectSpinnerFrom(position: Int) {
+        binding.spinnerFromCurrency.setSelection(position)
+    }
+
+    private fun selectSpinnerTo(position: Int) {
+        binding.spinnerToCurrency.setSelection(position)
+    }
+
+    private fun goToDetails() {
+        val bundle =
+            bundleOf("${Constants.KEY_BASE_CURRENCY}" to binding.spinnerFromCurrency.selectedItem)
+        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
+    }
+
+    private fun showResult(result: String) {
+        binding.etTo.setText(result)
     }
 
     override fun onDestroyView() {
@@ -60,65 +102,105 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     fun initViews() {
         binding.buttonConvert.setOnClickListener {
             convertCurrencies()
-//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
+
+        binding.buttonDetails.setOnClickListener {
+            goToDetails()
+        }
+
+        binding.buttonSwap.setOnClickListener {
+            converterViewModel.swap(
+                binding.spinnerFromCurrency.selectedItem.toString(),
+                binding.spinnerToCurrency.selectedItem.toString(), et_from.text.toString()
+            )
+        }
+
+        binding.etFrom.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                binding.spinnerFromCurrency.selectedItem?.let {
+                    converterViewModel.onValueChanged(
+                        binding.spinnerFromCurrency.selectedItem.toString(),
+                        binding.spinnerToCurrency.selectedItem.toString(), s.toString()
+                    )
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
     }
 
-    fun observeFlowData() {
-        lifecycleScope.launchWhenStarted {
-            converterViewModel.uiFlow.collect { state ->
-                when (state) {
-                    is Resource.Loading -> {
-                        showLoading(progress_bar, state.loading)
-                    }
-                    is Resource.Success -> {
-                        showLoading(progress_bar, false)
-                        //state.data?.let { showCharacters(it) } ?: showError(state.error)
-                    }
-                    is Resource.Error -> {
-                        showLoading(progress_bar, false)
-                        state.error?.let {
-                            showError(state.error)
+    private fun observeGetData() {
+        with(converterViewModel) {
+            getData()
+            lifecycleScope.launchWhenStarted {
+                uiFlowGet.collect { state ->
+                    when (state) {
+                        is Resource.Loading -> {
+                            showLoading(progress_bar, state.loading)
                         }
-                    }
+                        is Resource.Success -> {
+                            showLoading(progress_bar, false)
+                            //state.data?.let { showCharacters(it) } ?: showError(state.error)
+                        }
+                        is Resource.Error -> {
+                            showLoading(progress_bar, false)
+                            state.error?.let {
+                                showError(state.error)
+                            }
+                        }
 
+                    }
                 }
             }
         }
     }
 
 
-    fun getData() {
-//        converterViewModel.getData()
-        readCurrencies()
+    private fun getData() {
+        observeGetData()
+        readCurrenciesFromJson()
     }
 
-    fun readCurrencies() {
+    private fun readCurrenciesFromJson() {
         val input: InputStream = resources.openRawResource(R.raw.currencies)
-        val currencyList = converterViewModel.getCurrencyList(input)
-        currencyList?.let {
-            var names = currencyList.map { it.code }
-            val adapter = ArrayAdapter(
-                requireContext(),
-                R.layout.item_spinner, names
-            )
-
-            spinner_from_currency.adapter = adapter
-            spinner_from_currency.onItemSelectedListener = this
-
-            spinner_to_currency.adapter = adapter
-            spinner_to_currency.onItemSelectedListener = this
-        }
+        converterViewModel.getStaticCurrencyList(input)
     }
 
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+    private fun showCurrenciesList(names: List<String>) {
 
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_spinner, names
+        )
+
+        binding.spinnerFromCurrency.adapter = adapter
+        binding.spinnerFromCurrency.onItemSelectedListener = this
+
+        binding.spinnerToCurrency.adapter = adapter
+        binding.spinnerToCurrency.onItemSelectedListener = this
+
+
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        when (parent?.id) {
+            R.id.spinner_from_currency -> {
+                convertCurrencies()
+            }
+
+            R.id.spinner_to_currency -> {
+                convertCurrencies()
+            }
+        }
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
 
     }
-
 
     private fun convertCurrencies() {
         converterViewModel.convertCurrency(
@@ -128,15 +210,14 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         )
 
         lifecycleScope.launchWhenStarted {
-            converterViewModel.uiFlow.collect { state ->
+            converterViewModel.uiFlowConvert.collect { state ->
                 when (state) {
                     is Resource.Loading -> {
                         showLoading(progress_bar, state.loading)
                     }
                     is Resource.Success -> {
                         showLoading(progress_bar, false)
-                        tv_to_currency.text = state.data?.result.toString()
-                        //state.data?.let { showCharacters(it) } ?: showError(state.error)
+                        binding.etTo.setText(state.data)
                     }
                     is Resource.Error -> {
                         showLoading(progress_bar, false)
@@ -144,9 +225,12 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                             showError(state.error)
                         }
                     }
+                    else -> {
 
+                    }
                 }
             }
         }
     }
+
 }
