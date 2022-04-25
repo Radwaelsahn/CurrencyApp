@@ -5,7 +5,6 @@ import com.radwaelsahn.currencyapp.BuildConfig
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies.CurrenciesDataSource
 import com.radwaelsahn.currencyapp.data.models.Currencies
-import com.radwaelsahn.currencyapp.data.models.Rates
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,8 +15,7 @@ import kotlin.coroutines.CoroutineContext
 
 class ConverterUseCase @Inject constructor(
     private val dataRepository: CurrenciesDataSource,
-    override val coroutineContext: CoroutineContext,
-    private val currenciesMapper: CurrenciesMapper
+    override val coroutineContext: CoroutineContext
 ) : CoroutineScope {
 
     private val _uiFlow = MutableStateFlow<Resource<String>>(Resource.Loading(true))
@@ -59,9 +57,10 @@ class ConverterUseCase @Inject constructor(
                 if (resources.errorResponse != null) {
                     _uiFlow.value = Resource.Error(resources.errorResponse?.error?.info)
                 } else if (resources!!.data != null) {
-                    val rateMap = currenciesMapper.to(resources.data?.rates as Rates)
+//                    val rateMap = currenciesMapper.to(resources.data?.rates as Rates)
                     val intAmount = Integer.parseInt(amount)
-                    val result = (intAmount * rateMap[to]!!).toString()
+                    val rate = resources.data?.rates?.get(to)!!
+                    val result = (intAmount * rate).toString()
                     convertedValue.postValue(result)
                     _uiFlow.value = Resource.Success(result)
                 }

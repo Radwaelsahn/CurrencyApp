@@ -28,12 +28,8 @@ class ConverterViewModel @Inject constructor(
 
 
 
-    private fun fetchCurrencies(base: String) {
-        getLatestCurrenciesUseCase.fetchCurrencies(base)
-    }
-
     fun callGetCurrenciesAPI(base: String) {
-        fetchCurrencies(base)
+        getLatestCurrenciesUseCase.fetchCurrencies(base)
     }
 
 

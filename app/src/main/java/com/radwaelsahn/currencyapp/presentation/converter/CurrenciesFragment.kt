@@ -85,8 +85,9 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun goToDetails() {
+        val base = binding.spinnerFromCurrency.selectedItem?.let { it } ?: ""
         val bundle =
-            bundleOf("${Constants.KEY_BASE_CURRENCY}" to binding.spinnerFromCurrency.selectedItem)
+            bundleOf("${Constants.KEY_BASE_CURRENCY}" to base)
         findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
     }
 
