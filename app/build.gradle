@@ -21,6 +21,10 @@ android {
         buildConfigField 'String', 'BASE_URL', "\"http://data.fixer.io/api/\""
         buildConfigField 'String', "API_KEY", "\"5446d9ab83f7d41d97d4ec800a45b362\""
 
+//        buildConfigField 'String', 'BASE_URL', "\"http://api.exchangeratesapi.io/v1/\""
+//        buildConfigField 'String', "API_KEY", "\"128ca7238954cc8e4427ddfaf5681dec\""
+
+
         vectorDrawables.useSupportLibrary = true
         javaCompileOptions {
             annotationProcessorOptions {

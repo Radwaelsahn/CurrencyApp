@@ -21,14 +21,14 @@ import kotlin.coroutines.CoroutineContext
 
 class GetLatestCurrenciesUseCase @Inject constructor(
     private val dataRepository: CurrenciesDataSource,
-    override val coroutineContext: CoroutineContext
+    override val coroutineContext: CoroutineContext,
+    private val currenciesMapper: CurrenciesMapper
 ) : CoroutineScope {
 
 
     val staticCurrenciesList = MutableLiveData<List<String>>()
-    val isLoading = MutableLiveData<Boolean>()
-    private val _uiFlow = MutableStateFlow<Resource<Rates>>(Resource.Loading(true))
-    val uiFlow: StateFlow<Resource<Rates>> = _uiFlow
+    private val _uiFlow = MutableStateFlow<Resource<Map<String, Double>>>(Resource.Loading(true))
+    val uiFlow: StateFlow<Resource<Map<String, Double>>> = _uiFlow
 
     private val _response = MutableLiveData<Resource<CurrenciesResponse>>()
     val response = _response
@@ -51,30 +51,27 @@ class GetLatestCurrenciesUseCase @Inject constructor(
         }
     }
 
-    fun fetchCurrencies() {
+    fun fetchCurrencies(base: String) {
 
         launch {
             try {
                 _uiFlow.value = Resource.Loading(true)
-                isLoading.value = true
                 var resources = dataRepository.getCurrencies(
-                    BuildConfig.API_KEY
+                    BuildConfig.API_KEY, base
                 )
                 _uiFlow.value = Resource.Loading(false)
-                isLoading.value = false
 
                 if (resources.errorResponse != null) {
                     _uiFlow.value = Resource.Error(resources.errorResponse?.error?.info)
                 } else if (resources!!.data != null) {
-
+                    val rateMap = currenciesMapper.to(resources.data?.rates as Rates)
                     _response.postValue(resources)
-                    _uiFlow.value = Resource.Success(resources.data?.rates)
+                    _uiFlow.value = Resource.Success(rateMap)
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
                 _uiFlow.value = Resource.Loading(false)
-                isLoading.value = false
                 _uiFlow.value = Resource.Error(e.message)
             }
         }
