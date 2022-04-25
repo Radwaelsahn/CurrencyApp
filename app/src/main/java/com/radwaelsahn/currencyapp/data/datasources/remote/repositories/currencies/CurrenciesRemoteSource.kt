@@ -9,10 +9,15 @@ import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
  */
 
 interface CurrenciesRemoteSource {
-    suspend fun getCurrencies(key: String): Resource<CurrenciesResponse>
+    suspend fun getCurrencies(key: String, base: String): Resource<CurrenciesResponse>
     suspend fun convertCurrency(
-        accessKey: String, from: String,
+        accessKey: String, base: String,
         to: String,
         amount: String
     ): Resource<ConvertResponse>
+
+    suspend fun getHistory(
+        date: String, accessKey: String,
+        symbols: String, base: String
+    ): Resource<CurrenciesResponse>
 }

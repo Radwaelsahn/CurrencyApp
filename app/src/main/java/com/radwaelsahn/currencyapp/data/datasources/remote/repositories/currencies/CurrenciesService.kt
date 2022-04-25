@@ -5,6 +5,7 @@ import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
 import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -22,13 +23,26 @@ interface CurrenciesService {
     suspend fun getCurrenciesWithBase(
         @Query("access_key") accessKey: String,
         @Query("base") base: String,
-        @Query("symbols") symbols: String,
+//        latest?access_key=5446d9ab83f7d41d97d4ec800a45b362&symbols=EGP
+    ): Response<CurrenciesResponse>
+
+    @GET(Urls.Currencies)
+    suspend fun getCurrenciesWithSymbols(
+        @Query("access_key") accessKey: String,
+        @Query("symbols") symbols: String
     ): Response<CurrenciesResponse>
 
     @GET(Urls.Convert)
     suspend fun convertCurrency(
-        @Query("access_key") accessKey: String, @Query("from") from: String,
+        @Query("access_key") accessKey: String, @Query("from") base: String,
         @Query("to") to: String,
         @Query("amount") amount: String
     ): Response<ConvertResponse>
+
+    @GET(Urls.History)
+    //2021-04-20?access_key=5446d9ab83f7d41d97d4ec800a45b362&symbols=USD,CAD,EUR,EGP
+    suspend fun getHistory(
+        @Path("dateFrom") date: String, @Query("access_key") accessKey: String,
+        @Query("symbols") symbols: String
+    ): Response<CurrenciesResponse>
 }
