@@ -28,10 +28,11 @@ class CurrenciesRemoteRepository @Inject constructor(
             var myResponse = response as CurrenciesResponse
             if (myResponse.success)
                 Resource.Success(data = myResponse)
-            else
-                Resource.DataError(errorResponse = myResponse.error as ErrorResponse)
+            else {
+                Resource.DataError(errorResponse = ErrorResponse(myResponse.error as Error, false))
+            }
         } catch (e: Exception) {
-            Resource.DataError(errorResponse = response as ErrorResponse)
+            Resource.DataError(errorResponse = (response as ErrorResponse))
         }
     }
 
@@ -64,8 +65,9 @@ class CurrenciesRemoteRepository @Inject constructor(
             var myResponse = response as CurrenciesResponse
             if (myResponse.success)
                 Resource.Success(data = myResponse)
-            else
-                Resource.DataError(errorResponse = myResponse.error as ErrorResponse)
+            else {
+                Resource.DataError(errorResponse = ErrorResponse(myResponse.error as Error, false))
+            }
         } catch (e: Exception) {
             Resource.DataError(errorResponse = response as ErrorResponse)
         }
