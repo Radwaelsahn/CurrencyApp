@@ -63,18 +63,18 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
             observe(viewLifecycleOwner, convertedValue, ::showResult)
             observe(
                 viewLifecycleOwner,
-                staticCurrenciesList,
-                ::showCurrenciesList
+                currenciesList,
+                ::showCurrenciesFromList
             )
             observe(viewLifecycleOwner, selectFrom, ::selectSpinnerFrom)
             observe(viewLifecycleOwner, selectTo, ::selectSpinnerTo)
-//            observe(viewLifecycleOwner, fromValue, ::showFrom)
+            observe(viewLifecycleOwner, fromValue, ::showFrom)
         }
     }
 
-//    private fun showFrom(value: String) {
-//        binding.etFrom.setText(value)
-//    }
+    private fun showFrom(value: String) {
+        binding.etFrom.setText(value)
+    }
 
     private fun selectSpinnerFrom(position: Int) {
         binding.spinnerFromCurrency.setSelection(position)
@@ -109,6 +109,12 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         }
 
         binding.buttonSwap.setOnClickListener {
+            val fromAdapter = binding.spinnerFromCurrency.adapter
+            val toAdapter = binding.spinnerToCurrency.adapter
+
+            binding.spinnerFromCurrency.adapter = toAdapter
+            binding.spinnerToCurrency.adapter = fromAdapter
+
             converterViewModel.swap(
                 binding.spinnerFromCurrency.selectedItem.toString(),
                 binding.spinnerToCurrency.selectedItem.toString(), et_from.text.toString()
@@ -134,8 +140,9 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun observeGetData() {
+        val base = binding.spinnerFromCurrency.selectedItem?.let { it } ?: ""
         with(converterViewModel) {
-            getData()
+            callGetCurrenciesAPI(base.toString())
             lifecycleScope.launchWhenStarted {
                 uiFlowGet.collect { state ->
                     when (state) {
@@ -144,7 +151,10 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                         }
                         is Resource.Success -> {
                             showLoading(progress_bar, false)
-                            //state.data?.let { showCharacters(it) } ?: showError(state.error)
+                            state.data?.let {
+                                showCurrenciesFromList(it.keys.toList())
+                                showCurrenciesToList(it.keys.toList())
+                            } ?: showError(state.error)
                         }
                         is Resource.Error -> {
                             showLoading(progress_bar, false)
@@ -157,33 +167,40 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
                 }
             }
         }
+
     }
 
 
     private fun getData() {
         observeGetData()
-        readCurrenciesFromJson()
     }
 
-    private fun readCurrenciesFromJson() {
-        val input: InputStream = resources.openRawResource(R.raw.currencies)
-        converterViewModel.getStaticCurrencyList(input)
+//    private fun readCurrenciesFromJson() {
+//        val input: InputStream = resources.openRawResource(R.raw.currencies)
+//        converterViewModel.getStaticCurrencyList(input)
+//    }
+
+    private fun showCurrenciesFromList(names: List<String>) {
+
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.item_spinner, listOf("EUR")
+        )
+
+        binding.spinnerFromCurrency.adapter = adapter
+        binding.spinnerFromCurrency.onItemSelectedListener = this
+
     }
 
-    private fun showCurrenciesList(names: List<String>) {
+    private fun showCurrenciesToList(names: List<String>) {
 
         val adapter = ArrayAdapter(
             requireContext(),
             R.layout.item_spinner, names
         )
 
-        binding.spinnerFromCurrency.adapter = adapter
-        binding.spinnerFromCurrency.onItemSelectedListener = this
-
         binding.spinnerToCurrency.adapter = adapter
         binding.spinnerToCurrency.onItemSelectedListener = this
-
-
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

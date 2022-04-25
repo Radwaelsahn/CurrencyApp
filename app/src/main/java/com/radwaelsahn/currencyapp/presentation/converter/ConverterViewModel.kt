@@ -16,54 +16,56 @@ class ConverterViewModel @Inject constructor(
 ) : ViewModel() {
     val uiFlowGet = getLatestCurrenciesUseCase.uiFlow
     val currenciesResponse = getLatestCurrenciesUseCase.response
+    val currenciesList = getLatestCurrenciesUseCase.currenciesList
 
     val uiFlowConvert = converterUseCase.uiFlow
-    val convertedValue = MutableLiveData<String>()
+    val convertedValue = converterUseCase.convertedValue
+    val fromValue = MutableLiveData<String>()
     var inputValue = "1"
-
-    val staticCurrenciesList = getLatestCurrenciesUseCase.staticCurrenciesList
 
     val selectFrom = MutableLiveData<Int>()
     val selectTo = MutableLiveData<Int>()
 
-    fun getStaticCurrencyList(input: InputStream) {
-        getLatestCurrenciesUseCase.getStaticCurrencyList(input)
+
+
+    private fun fetchCurrencies(base: String) {
+        getLatestCurrenciesUseCase.fetchCurrencies(base)
     }
 
-    private fun fetchCurrencies() {
-        getLatestCurrenciesUseCase.fetchCurrencies()
+    fun callGetCurrenciesAPI(base: String) {
+        fetchCurrencies(base)
     }
 
-    fun getData() {
-        fetchCurrencies()
-    }
 
-    fun convertCurrency(from: String, to: String, amount: String) {
+    fun convertCurrency(base: String, to: String, amount: String) {
         if (isValidAmount(amount))
-            converterUseCase.convertCurrency(from, to, amount)
+            converterUseCase.convertCurrencyFromLatestApi(base, to, amount)
+        //converterUseCase.callConvertCurrencyApi(from, to, amount)
     }
 
 
-    fun onValueChanged(from: String, to: String, amount: String) {
-        convertCurrency(from, to, amount)
+    fun onValueChanged(base: String, to: String, amount: String) {
+        convertCurrency(base, to, amount)
     }
 
-    fun swap(from: String, to: String, amount: String) {
-        inputValue = (amount)
+    fun swap(base: String, to: String, amount: String) {
+        inputValue = convertedValue.value.toString()
+        fromValue.postValue(amount)
+        convertedValue.postValue(amount)
 
-        val fromPosition = getCurrencyIndex(from)
-        val toPosition = getCurrencyIndex(to)
-        selectFrom.postValue(toPosition)
-        selectTo.postValue(fromPosition)
+//        val fromPosition = getCurrencyIndex(from)
+//        val toPosition = getCurrencyIndex(to)
+//        selectFrom.postValue(toPosition)
+//        selectTo.postValue(fromPosition)
     }
 
-    private fun getCurrencyIndex(text: String): Int {
-        Log.e("position", text)
-        val position = staticCurrenciesList.value?.indexOf(text) ?: return 0
-        Log.e("position", position.toString())
-        return position
-
-    }
+//    private fun getCurrencyIndex(text: String): Int {
+//        Log.e("position", text)
+//        val position = staticCurrenciesList.value?.indexOf(text) ?: return 0
+//        Log.e("position", position.toString())
+//        return position
+//
+//    }
 
     private fun isValidAmount(amount: String): Boolean {
         if (amount.isEmpty())

@@ -26,7 +26,7 @@ class GetLatestCurrenciesUseCase @Inject constructor(
 ) : CoroutineScope {
 
 
-    val staticCurrenciesList = MutableLiveData<List<String>>()
+    val currenciesList = MutableLiveData<List<String>>()
     private val _uiFlow = MutableStateFlow<Resource<Map<String, Double>>>(Resource.Loading(true))
     val uiFlow: StateFlow<Resource<Map<String, Double>>> = _uiFlow
 
@@ -42,7 +42,7 @@ class GetLatestCurrenciesUseCase @Inject constructor(
 
             list?.let {
                 var names = list.map { it.code }
-                staticCurrenciesList.postValue(names)
+                currenciesList.postValue(names)
             }
 
         } catch (e: Exception) {
@@ -66,6 +66,7 @@ class GetLatestCurrenciesUseCase @Inject constructor(
                 } else if (resources!!.data != null) {
                     val rateMap = currenciesMapper.to(resources.data?.rates as Rates)
                     _response.postValue(resources)
+                    currenciesList.postValue(rateMap.keys.toList())
                     _uiFlow.value = Resource.Success(rateMap)
                 }
 
