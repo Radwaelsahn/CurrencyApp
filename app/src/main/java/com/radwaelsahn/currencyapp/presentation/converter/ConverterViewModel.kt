@@ -36,7 +36,6 @@ class ConverterViewModel @Inject constructor(
     fun convertCurrency(base: String, to: String, amount: String) {
         if (isValidAmount(amount))
             converterUseCase.convertCurrencyFromLatestApi(base, to, amount)
-        //converterUseCase.callConvertCurrencyApi(from, to, amount)
     }
 
 

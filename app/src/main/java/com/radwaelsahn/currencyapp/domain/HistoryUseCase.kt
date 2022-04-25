@@ -1,9 +1,11 @@
 package com.radwaelsahn.currencyapp.domain
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.radwaelsahn.currencyapp.BuildConfig
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies.CurrenciesDataSource
+import com.radwaelsahn.currencyapp.data.models.HistoryItem
 //import com.radwaelsahn.currencyapp.data.models.Rates
 import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 import kotlinx.coroutines.CoroutineScope
@@ -11,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -19,11 +23,16 @@ class HistoryUseCase @Inject constructor(
     override val coroutineContext: CoroutineContext
 ) : CoroutineScope {
 
-    private val _uiFlow = MutableStateFlow<Resource<Map<String, Double>>>(Resource.Loading(true))
-    val uiFlow: StateFlow<Resource<Map<String, Double>>> = _uiFlow
+    //    private val _uiFlow = MutableStateFlow<Resource<Map<String, Double>>>(Resource.Loading(true))
+//val uiFlow: StateFlow<Resource<Map<String, Double>>> = _uiFlow
+    private val _uiFlow =
+        MutableStateFlow<Resource<MutableList<HistoryItem>>>(Resource.Loading(true))
+    val uiFlow: StateFlow<Resource<MutableList<HistoryItem>>> = _uiFlow
 
-    private val _response = MutableLiveData<Resource<CurrenciesResponse>>()
-    val response = _response
+
+    val history = MutableLiveData<MutableList<HistoryItem>>()
+//    private val _response = MutableLiveData<Resource<CurrenciesResponse>>()
+//    val response = _response
 
 
     fun callGetHistoryApi(
@@ -42,12 +51,22 @@ class HistoryUseCase @Inject constructor(
                 if (resources.errorResponse != null) {
                     _uiFlow.value = Resource.Error(resources.errorResponse?.error?.info)
                 } else if (resources!!.data != null) {
-//                    val rateMap = currenciesMapper.to(resources.data?.rates as Rates)
-                    _response.postValue(resources)
-//                    _uiFlow.value = Resource.Success(rateMap)
 
-                    //currenciesList.postValue(resources.data?.rates?.keys?.toList())
-                    _uiFlow.value = Resource.Success(resources.data?.rates)
+                    var list = history.value
+                    if (list == null)
+                        list = mutableListOf()
+
+                    resources!!.data?.rates?.map {
+                        list.add(
+                            HistoryItem(
+                                date,
+                                it.key,
+                                it.value.toString()
+                            )
+                        )
+                    }
+                    history.value = list!!
+                    _uiFlow.value = Resource.Success(list!!)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -55,6 +74,30 @@ class HistoryUseCase @Inject constructor(
                 _uiFlow.value = Resource.Error(e.message)
             }
         }
+    }
+
+    fun getHistory(base: String, to: String) {
+
+        val symbols = to
+
+        var date = getDayBeforeDateBy(3)
+        callGetHistoryApi(date, symbols, base)
+
+        date = getDayBeforeDateBy(2)
+        callGetHistoryApi(date, symbols, base)
+
+        date = getDayBeforeDateBy(1)
+        callGetHistoryApi(date, symbols, base)
+    }
+
+    private fun getDayBeforeDateBy(by: Int): String {
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -by)
+        val df = SimpleDateFormat("yyyy-MM-dd")
+        val date = df.format(calendar.time)
+
+        return date
+
     }
 
 }

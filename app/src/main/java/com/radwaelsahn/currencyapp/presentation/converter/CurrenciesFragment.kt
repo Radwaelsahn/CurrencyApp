@@ -25,8 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_currencies.*
 import kotlinx.coroutines.flow.collect
 
-import java.io.InputStream
-
 @AndroidEntryPoint
 class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
@@ -86,9 +84,13 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     private fun goToDetails() {
         val base = binding.spinnerFromCurrency.selectedItem?.let { it } ?: ""
+        val to = binding.spinnerToCurrency.selectedItem?.let { it } ?: ""
         val bundle =
-            bundleOf("${Constants.KEY_BASE_CURRENCY}" to base)
-        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
+            bundleOf(
+                "${Constants.KEY_BASE_CURRENCY}" to base,
+                "${Constants.KEY_TO_CURRENCY}" to to
+            )
+        findNavController().navigate(R.id.action_FirstFragment_to_HistoryFragment, bundle)
     }
 
     private fun showResult(result: String) {
@@ -116,10 +118,13 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
             binding.spinnerFromCurrency.adapter = toAdapter
             binding.spinnerToCurrency.adapter = fromAdapter
 
-            converterViewModel.swap(
-                binding.spinnerFromCurrency.selectedItem.toString(),
-                binding.spinnerToCurrency.selectedItem.toString(), et_from.text.toString()
-            )
+            binding.tvFromCurrency.text = converterViewModel.fromValue.value
+            binding.tvToCurrency.text = converterViewModel.convertedValue.value
+
+//            converterViewModel.swap(
+//                binding.spinnerFromCurrency.selectedItem.toString(),
+//                binding.spinnerToCurrency.selectedItem.toString(), et_from.text.toString()
+//            )
         }
 
         binding.etFrom.addTextChangedListener(object : TextWatcher {

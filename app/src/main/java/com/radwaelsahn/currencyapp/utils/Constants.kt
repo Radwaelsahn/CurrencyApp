@@ -11,6 +11,7 @@ object Constants {
 
     const val POPULAR_CURRENCIES = "USD,EGP,KWD,SAR,EUR"
     const val KEY_BASE_CURRENCY = "KEY_BASE_CURRENCY"
+    const val KEY_TO_CURRENCY = "KEY_TO_CURRENCY"
 
     const val IMAGE_CORNER = 20
     const val pageSize = 20

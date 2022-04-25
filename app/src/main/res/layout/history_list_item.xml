@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="item"
+            type="com.radwaelsahn.currencyapp.data.models.HistoryItem" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp">
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="@{item.date}"
+            android:textSize="@dimen/_8ssp"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintHorizontal_chainStyle="spread_inside"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvCurrencyName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:text="@{item.symbol}"
+            bind:layout_constraintEnd_toStartOf="@id/tvCurrencyRate"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toBottomOf="@id/tvDate" />
+
+
+        <TextView
+            android:id="@+id/tvCurrencyRate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{item.rate+' '}"
+            bind:layout_constraintEnd_toEndOf="parent"
+            bind:layout_constraintStart_toEndOf="@id/tvCurrencyName"
+            bind:layout_constraintTop_toTopOf="@id/tvCurrencyName" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
