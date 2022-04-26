@@ -21,7 +21,7 @@ class HistoryViewModel @Inject constructor(
     fun getHistory(base: String, to: String) {
         Log.e("from",base + " to: " +to)
 
-        getHistoryUseCase.getHistory(base, to)
+        getHistoryUseCase.getHistoryAsync(base, to)
     }
 
 

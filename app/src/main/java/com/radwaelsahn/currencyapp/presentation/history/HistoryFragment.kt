@@ -1,6 +1,7 @@
 package com.radwaelsahn.currencyapp.presentation.history
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -48,13 +49,10 @@ class HistoryFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        binding.buttonSecond.setOnClickListener {
-//            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
-//        }
-
         historyViewModel.base = arguments?.getString(Constants.KEY_BASE_CURRENCY)!!
         historyViewModel.to = arguments?.getString(Constants.KEY_TO_CURRENCY)!!
 
+//        Log.e("from",base + " to: " +to)
         binding.tvFrom.text = historyViewModel.base
         historyViewModel.getHistory(
             historyViewModel.base, historyViewModel.to

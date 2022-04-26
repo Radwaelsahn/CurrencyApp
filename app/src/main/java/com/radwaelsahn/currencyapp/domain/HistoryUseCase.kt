@@ -9,6 +9,7 @@ import com.radwaelsahn.currencyapp.data.models.HistoryItem
 //import com.radwaelsahn.currencyapp.data.models.Rates
 import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,11 +32,101 @@ class HistoryUseCase @Inject constructor(
 
 
     val history = MutableLiveData<MutableList<HistoryItem>>()
-//    private val _response = MutableLiveData<Resource<CurrenciesResponse>>()
-//    val response = _response
+
+    fun getRateOnDate(date: String, base: String, symbols: String) =
+        async {
+            dataRepository.getHistory(
+                date,
+                BuildConfig.API_KEY, symbols, base
+            )
+        }
 
 
-    fun callGetHistoryApi(
+    fun getHistoryAsync(base: String, symbols: String) {
+        _uiFlow.value = Resource.Loading(true)
+
+        launch {
+
+            var resources1Deferred = getRateOnDate(getDayBeforeDateBy(3), base, symbols)
+
+            var resources2Deferred = getRateOnDate(getDayBeforeDateBy(2), base, symbols)
+
+            var resources3Deferred = getRateOnDate(getDayBeforeDateBy(1), base, symbols)
+
+            var resources4Deferred = getRateOnDate(getDayBeforeDateBy(0), base, symbols)
+
+            handleResponse (resources1Deferred.await(), resources2Deferred.await(), resources3Deferred.await(), resources4Deferred.await())
+            _uiFlow.value = Resource.Loading(false)
+
+        }
+    }
+
+    private fun handleResponse(resources1: Resource<CurrenciesResponse>, resources2: Resource<CurrenciesResponse>, resources3: Resource<CurrenciesResponse>, resources4: Resource<CurrenciesResponse>) {
+
+        if (resources4.errorResponse != null) {
+            _uiFlow.value = Resource.Error(resources4.errorResponse?.error?.info)
+        } else if (resources4!!.data != null) {
+
+            var list = history.value
+            if (list == null)
+                list = mutableListOf()
+
+            resources1!!.data?.rates?.map {
+                list.add(
+                    HistoryItem(
+                        resources1.data?.date!!,
+                        it.key,
+                        it.value.toString()
+                    )
+                )
+            }
+
+            resources2!!.data?.rates?.map {
+                list.add(
+                    HistoryItem(
+                        resources2.data?.date!!,
+                        it.key,
+                        it.value.toString()
+                    )
+                )
+            }
+
+            resources3!!.data?.rates?.map {
+                list.add(
+                    HistoryItem(
+                        resources3.data?.date!!,
+                        it.key,
+                        it.value.toString()
+                    )
+                )
+            }
+
+            resources4!!.data?.rates?.map {
+                list.add(
+                    HistoryItem(
+                        resources4.data?.date!!,
+                        it.key,
+                        it.value.toString()
+                    )
+                )
+            }
+            history.value = list!!
+            _uiFlow.value = Resource.Success(list!!)
+        }
+    }
+
+
+    private fun getDayBeforeDateBy(by: Int): String {
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, -by)
+        val df = SimpleDateFormat("yyyy-MM-dd")
+        val date = df.format(calendar.time)
+
+        return date
+
+    }
+
+    fun callSingleGetHistoryApi(
         date: String,
         symbols: String, base: String
     ) {
@@ -75,29 +166,4 @@ class HistoryUseCase @Inject constructor(
             }
         }
     }
-
-    fun getHistory(base: String, to: String) {
-
-        val symbols = to
-
-        var date = getDayBeforeDateBy(3)
-        callGetHistoryApi(date, symbols, base)
-
-        date = getDayBeforeDateBy(2)
-        callGetHistoryApi(date, symbols, base)
-
-        date = getDayBeforeDateBy(1)
-        callGetHistoryApi(date, symbols, base)
-    }
-
-    private fun getDayBeforeDateBy(by: Int): String {
-        val calendar: Calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -by)
-        val df = SimpleDateFormat("yyyy-MM-dd")
-        val date = df.format(calendar.time)
-
-        return date
-
-    }
-
 }
