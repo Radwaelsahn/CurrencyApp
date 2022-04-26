@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
 
@@ -75,16 +76,18 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun selectSpinnerFrom(position: Int) {
-        binding.spinnerFromCurrency.setSelection(position)
+        binding.autoCompleteFrom.setSelection(position)
     }
 
     private fun selectSpinnerTo(position: Int) {
-        binding.spinnerToCurrency.setSelection(position)
+        binding.autoCompleteTo.setSelection(position)
     }
 
-    private fun goToDetails() {
-        val base = binding.spinnerFromCurrency.selectedItem?.let { it } ?: ""
-        val to = binding.spinnerToCurrency.selectedItem?.let { it } ?: ""
+    private fun goToHistory() {
+        val base = binding.autoCompleteFrom.text.toString()//?.let { it } ?: ""
+        val to = binding.autoCompleteTo.text.toString()//?.let { it } ?: ""
+
+
         val bundle =
             bundleOf(
                 "${Constants.KEY_BASE_CURRENCY}" to base,
@@ -108,18 +111,20 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         }
 
         binding.buttonDetails.setOnClickListener {
-            goToDetails()
+            goToHistory()
         }
 
         binding.buttonSwap.setOnClickListener {
-            val fromAdapter = binding.spinnerFromCurrency.adapter
-            val toAdapter = binding.spinnerToCurrency.adapter
 
-            binding.spinnerFromCurrency.adapter = toAdapter
-            binding.spinnerToCurrency.adapter = fromAdapter
+            val currencyFrom = binding.autoCompleteFrom.text.toString()
+            val currencyTo = binding.autoCompleteTo.text.toString()
+            binding.autoCompleteFrom.setText(currencyTo)
+            binding.autoCompleteTo.setText(currencyFrom)
 
-            binding.tvFromCurrency.text = converterViewModel.fromValue.value
-            binding.tvToCurrency.text = converterViewModel.convertedValue.value
+            val from = binding.etFrom.text.toString()
+            val to = binding.etTo.text.toString()
+            binding.etFrom.setText(to)
+            binding.etTo.setText(from)
 
 //            converterViewModel.swap(
 //                binding.spinnerFromCurrency.selectedItem.toString(),
@@ -129,10 +134,10 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
         binding.etFrom.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                binding.spinnerFromCurrency.selectedItem?.let {
+                binding.autoCompleteFrom.text?.let {
                     converterViewModel.onValueChanged(
-                        binding.spinnerFromCurrency.selectedItem.toString(),
-                        binding.spinnerToCurrency.selectedItem.toString(), s.toString()
+                        binding.autoCompleteFrom.text.toString(),
+                        binding.autoCompleteTo.text.toString(), s.toString()
                     )
                 }
             }
@@ -146,7 +151,7 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun observeGetData() {
-        val base = binding.spinnerFromCurrency.selectedItem?.let { it } ?: ""
+        val base = binding.autoCompleteFrom.text?.let { it } ?: ""
         with(converterViewModel) {
             callGetCurrenciesAPI(base.toString())
             lifecycleScope.launchWhenStarted {
@@ -193,29 +198,45 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
             R.layout.item_spinner, listOf("EUR")
         )
 
-        binding.spinnerFromCurrency.adapter = adapter
-        binding.spinnerFromCurrency.onItemSelectedListener = this
+        binding.autoCompleteFrom.setAdapter(adapter)
+//        binding.autoCompleteFrom.onItemSelectedListener = this
+        binding.autoCompleteFrom.onItemClickListener =
+            OnItemClickListener { parent, view, position, id ->
+                convertCurrencies()
+            }
+        binding.autoCompleteFrom.setAdapter(adapter)
 
+        binding.autoCompleteFrom.setText("EUR")
     }
 
     private fun showCurrenciesToList(names: List<String>) {
+        if (names.isNotEmpty()) {
+            val adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.item_spinner, names
+            )
+            adapter.filter.filter(null)
+            binding.autoCompleteTo.setAdapter(adapter)
+//            binding.autoCompleteTo.onItemSelectedListener = this
 
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.item_spinner, names
-        )
+            binding.autoCompleteTo.onItemClickListener =
+                OnItemClickListener { parent, view, position, id ->
+                    convertCurrencies()
+                }
+            binding.autoCompleteTo.setText(names[0])
+            convertCurrencies()
+//            binding.autoCompleteTo.setse( 0)
 
-        binding.spinnerToCurrency.adapter = adapter
-        binding.spinnerToCurrency.onItemSelectedListener = this
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent?.id) {
-            R.id.spinner_from_currency -> {
+            R.id.autoCompleteFrom -> {
                 convertCurrencies()
             }
 
-            R.id.spinner_to_currency -> {
+            R.id.autoCompleteTo -> {
                 convertCurrencies()
             }
         }
@@ -227,8 +248,8 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
     private fun convertCurrencies() {
         converterViewModel.convertCurrency(
-            spinner_from_currency.selectedItem.toString(),
-            spinner_to_currency.selectedItem.toString(),
+            autoCompleteFrom.text.toString(),
+            autoCompleteTo.text.toString(),
             et_from.text.toString()
         )
 

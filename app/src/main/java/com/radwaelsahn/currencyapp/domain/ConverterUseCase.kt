@@ -59,10 +59,16 @@ class ConverterUseCase @Inject constructor(
                 } else if (resources!!.data != null) {
 //                    val rateMap = currenciesMapper.to(resources.data?.rates as Rates)
                     val intAmount = Integer.parseInt(amount)
-                    val rate = resources.data?.rates?.get(to)!!
-                    val result = (intAmount * rate).toString()
-                    convertedValue.postValue(result)
-                    _uiFlow.value = Resource.Success(result)
+                    resources.data?.let { data ->
+                        data.rates?.let { rates->
+                            if(rates.isNotEmpty()) {
+                                val rate = rates.get(to)!!
+                                val result = (intAmount * rate).toString()
+                                convertedValue.postValue(result)
+                                _uiFlow.value = Resource.Success(result)
+                            }
+                        }
+                    }
                 }
 
             } catch (e: Exception) {

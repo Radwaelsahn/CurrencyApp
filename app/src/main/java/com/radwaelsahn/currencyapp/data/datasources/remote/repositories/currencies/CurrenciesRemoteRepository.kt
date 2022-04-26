@@ -1,7 +1,8 @@
 package com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currencies
 
-import android.util.Log
 import com.google.gson.Gson
+import com.radwaelsahn.currencyapp.App
+import com.radwaelsahn.currencyapp.R
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
 
@@ -9,6 +10,8 @@ import com.radwaelsahn.currencyapp.data.models.responses.ErrorResponse
 import com.radwaelsahn.currencyapp.data.datasources.remote.BaseRemoteRepository
 import com.radwaelsahn.currencyapp.data.models.Error
 import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
+import java.io.BufferedReader
+import java.io.InputStream
 import javax.inject.Inject
 
 /**
@@ -23,6 +26,11 @@ class CurrenciesRemoteRepository @Inject constructor(
         val response = processCall { service.getCurrencies(key) }
 //        val response = processCall { service.getCurrenciesWithBase(key, "USD", "EGP") }
         // base API is restricted
+
+        // to reduce the number of calls we can use this
+//        val input: InputStream = App.context.resources.openRawResource(R.raw.convertresponse)
+//        val allText = input.bufferedReader().use(BufferedReader::readText)
+//        val response = Gson().fromJson(allText, CurrenciesResponse::class.java)
 
         return try {
             var myResponse = response as CurrenciesResponse

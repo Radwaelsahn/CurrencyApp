@@ -19,7 +19,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField 'String', 'BASE_URL', "\"http://data.fixer.io/api/\""
-        buildConfigField 'String', "API_KEY", "\"e19bbf5a831d542d01753b1818a60ef0\""
+        buildConfigField 'String', "API_KEY", "\"8e682f7f43080a83aa8a9afe7c1ab7ec\""
 
 //        buildConfigField 'String', 'BASE_URL', "\"http://api.exchangeratesapi.io/v1/\""
 //        buildConfigField 'String', "API_KEY", "\"128ca7238954cc8e4427ddfaf5681dec\""
