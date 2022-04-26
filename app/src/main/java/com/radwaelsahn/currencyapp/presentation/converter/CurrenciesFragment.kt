@@ -87,7 +87,6 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         val base = binding.autoCompleteFrom.text.toString()//?.let { it } ?: ""
         val to = binding.autoCompleteTo.text.toString()//?.let { it } ?: ""
 
-
         val bundle =
             bundleOf(
                 "${Constants.KEY_BASE_CURRENCY}" to base,
@@ -196,7 +195,7 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
 
         val adapter = ArrayAdapter(
             requireContext(),
-            R.layout.item_spinner, listOf("EUR")
+            R.layout.item_spinner, listOf("EUR") // because base is restricted
         )
 
         binding.autoCompleteFrom.setAdapter(adapter)

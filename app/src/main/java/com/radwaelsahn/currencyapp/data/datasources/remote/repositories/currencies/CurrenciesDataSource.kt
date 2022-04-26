@@ -18,7 +18,7 @@ interface CurrenciesDataSource {
     suspend fun getAllCharacters(): List<Character>
 
     /**remote*/
-    suspend fun getCurrencies(key: String, base: String): Resource<CurrenciesResponse>
+    suspend fun getCurrenciesRate(key: String, base: String): Resource<CurrenciesResponse>
     suspend fun convertCurrency(
         accessKey: String, base: String,
         to: String,

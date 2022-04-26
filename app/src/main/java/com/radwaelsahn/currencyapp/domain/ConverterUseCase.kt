@@ -49,7 +49,7 @@ class ConverterUseCase @Inject constructor(
         launch {
             try {
                 _uiFlow.value = Resource.Loading(true)
-                var resources = dataRepository.getCurrencies(
+                var resources = dataRepository.getCurrenciesRate(
                     BuildConfig.API_KEY, base
                 )
                 _uiFlow.value = Resource.Loading(false)

@@ -22,8 +22,8 @@ class CurrenciesRemoteRepository @Inject constructor(
     private val service: CurrenciesService
 ) : CurrenciesRemoteSource, BaseRemoteRepository() {
 
-    override suspend fun getCurrencies(key: String, base: String): Resource<CurrenciesResponse> {
-        val response = processCall { service.getCurrencies(key) }
+    override suspend fun getCurrenciesRate(key: String, base: String): Resource<CurrenciesResponse> {
+        val response = processCall { service.getCurrenciesRate(key) }
 //        val response = processCall { service.getCurrenciesWithBase(key, "USD", "EGP") }
         // base API is restricted
 
@@ -44,13 +44,14 @@ class CurrenciesRemoteRepository @Inject constructor(
         }
     }
 
+    //  API is restricted
     override suspend fun convertCurrency(
         accessKey: String, base: String,
         to: String,
         amount: String
     ): Resource<ConvertResponse> {
         val response = processCall { service.convertCurrency(accessKey, base, to, amount) }
-        //  API is restricted
+
         return try {
             var myResponse = response as ConvertResponse
             if (myResponse.success)

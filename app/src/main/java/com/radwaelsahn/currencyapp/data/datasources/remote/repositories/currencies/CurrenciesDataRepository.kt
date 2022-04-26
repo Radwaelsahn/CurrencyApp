@@ -29,8 +29,8 @@ class CurrenciesDataRepository @Inject constructor(
     /**Local**/
 
     /**    remote **/
-    override suspend fun getCurrencies(key: String, base: String): Resource<CurrenciesResponse> {
-        return remoteRepository.getCurrencies(key, base)
+    override suspend fun getCurrenciesRate(key: String, base: String): Resource<CurrenciesResponse> {
+        return remoteRepository.getCurrenciesRate(key, base)
     }
 
     override suspend fun convertCurrency(

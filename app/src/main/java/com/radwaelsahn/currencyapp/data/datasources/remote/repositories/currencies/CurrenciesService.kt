@@ -15,7 +15,7 @@ import retrofit2.http.Query
 interface CurrenciesService {
 
     @GET(Urls.Currencies)
-    suspend fun getCurrencies(
+    suspend fun getCurrenciesRate(
         @Query("access_key") accessKey: String
     ): Response<CurrenciesResponse>
 
