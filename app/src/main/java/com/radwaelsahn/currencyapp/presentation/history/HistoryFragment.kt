@@ -51,9 +51,8 @@ class HistoryFragment : BaseFragment() {
 
         historyViewModel.base = arguments?.getString(Constants.KEY_BASE_CURRENCY)!!
         historyViewModel.to = arguments?.getString(Constants.KEY_TO_CURRENCY)!!
+        historyViewModel.amount = arguments?.getString(Constants.KEY_AMOUNT_FROM)!!
 
-//        Log.e("from",base + " to: " +to)
-        binding.tvFrom.text = historyViewModel.base
         historyViewModel.getHistory(
             historyViewModel.base, historyViewModel.to
         )

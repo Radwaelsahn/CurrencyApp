@@ -91,7 +91,8 @@ class CurrenciesFragment : BaseFragment(), AdapterView.OnItemSelectedListener {
         val bundle =
             bundleOf(
                 "${Constants.KEY_BASE_CURRENCY}" to base,
-                "${Constants.KEY_TO_CURRENCY}" to to
+                "${Constants.KEY_TO_CURRENCY}" to to,
+                "${Constants.KEY_AMOUNT_FROM}" to binding.etFrom.text.toString()
             )
         findNavController().navigate(R.id.action_FirstFragment_to_HistoryFragment, bundle)
     }

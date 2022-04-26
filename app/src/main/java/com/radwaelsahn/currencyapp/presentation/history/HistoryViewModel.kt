@@ -17,6 +17,7 @@ class HistoryViewModel @Inject constructor(
 
     var base = ""
     var to = ""
+    var amount = ""
 
     fun getHistory(base: String, to: String) {
         Log.e("from",base + " to: " +to)
