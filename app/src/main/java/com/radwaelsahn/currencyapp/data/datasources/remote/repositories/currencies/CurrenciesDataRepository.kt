@@ -3,7 +3,6 @@ package com.radwaelsahn.currencyapp.data.datasources.remote.repositories.currenc
 import com.radwaelsahn.currencyapp.data.Resource
 import com.radwaelsahn.currencyapp.data.models.Character
 import com.radwaelsahn.currencyapp.data.models.responses.CurrenciesResponse
-import com.radwaelsahn.currencyapp.data.datasources.local.LocalSource
 import com.radwaelsahn.currencyapp.data.models.responses.ConvertResponse
 import javax.inject.Inject
 
@@ -13,21 +12,8 @@ import javax.inject.Inject
  */
 
 class CurrenciesDataRepository @Inject constructor(
-    private val remoteRepository: CurrenciesRemoteRepository,
-    private val localRepository: LocalSource
+    private val remoteRepository: CurrenciesRemoteRepository
 ) : CurrenciesDataSource {
-
-    override suspend fun saveCharacter(character: Character) {
-        localRepository.saveCharacter(character)
-    }
-
-    override suspend fun getAllCharacters(): List<Character> {
-        return localRepository.getAllCharacters()
-    }
-
-
-    /**Local**/
-
     /**    remote **/
     override suspend fun getCurrenciesRate(key: String, base: String): Resource<CurrenciesResponse> {
         return remoteRepository.getCurrenciesRate(key, base)

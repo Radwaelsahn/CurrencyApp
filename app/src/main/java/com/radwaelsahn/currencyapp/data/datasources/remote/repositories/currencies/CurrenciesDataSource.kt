@@ -13,9 +13,6 @@ import retrofit2.http.Query
  */
 
 interface CurrenciesDataSource {
-    /**local**/
-    suspend fun saveCharacter(character: Character)
-    suspend fun getAllCharacters(): List<Character>
 
     /**remote*/
     suspend fun getCurrenciesRate(key: String, base: String): Resource<CurrenciesResponse>

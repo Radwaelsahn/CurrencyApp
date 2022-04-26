@@ -19,11 +19,8 @@ package com.radwaelsahn.currencyapp.di
 import android.app.Application
 import android.content.Context
 import com.radwaelsahn.currencyapp.App
-import com.radwaelsahn.currencyapp.data.datasources.local.LocalRepository
-import com.radwaelsahn.currencyapp.data.datasources.local.LocalSource
 import com.radwaelsahn.currencyapp.data.datasources.local.Session
 import com.radwaelsahn.currencyapp.data.datasources.local.SharedPrefHelper
-import com.radwaelsahn.currencyapp.data.datasources.local.mapper.CharacterLocalMapper
 import com.radwaelsahn.currencyapp.data.datasources.remote.networking.ServiceGenerator
 import dagger.Module
 import dagger.Provides
@@ -59,13 +56,13 @@ class AppModule {
         return Dispatchers.Main
     }
 
-    @Provides
-    @Singleton
-    fun provideLocalSource(
-        context: Context,
-        mapper: CharacterLocalMapper
-    ): LocalSource {
-        return LocalRepository(context,mapper)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideLocalSource(
+//        context: Context,
+//        mapper: CharacterLocalMapper
+//    ): LocalSource {
+//        return LocalRepository(context,mapper)
+//    }
 
 }
